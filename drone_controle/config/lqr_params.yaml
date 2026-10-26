@@ -1,0 +1,34 @@
+# LQR / LQI configuration.
+#   ros2 run drone_controle lqr_node --ros-args --params-file ~/thesis_ws/src/drone_controle/config/pid_params.yaml --params-file ~/thesis_ws/src/drone_controle/config/lqr_params.yaml
+#
+# The w_* values are Bryson's rule maxima: Q_ii = 1 / w_state^2, R = 1 / w_input^2.
+# A SMALLER number means a HEAVIER penalty on that state or input.
+# DISCLAIMER: file was generated automatically so can be old if someone forget to update
+
+lqr_node:
+  ros__parameters:
+    use_integral: true        # true = LQI, false = plain LQR
+
+    # States
+    w_pos_max: 2.0            # m      S2 step size
+    w_z_max: 1.0              # m      S1 step size
+    w_yaw_max: 1.5707963      # rad    S3 step size
+    w_vel_max: 1.5            # m/s    = max_vel
+    w_vz_max: 2.0             # m/s    = max_vz of the PID
+    w_tilt_max: 0.30          # rad    = max_tilt
+    w_rate_rp_max: 3.0        # rad/s  = max_rate_rp of the PID
+    w_rate_yaw_max: 0.5       # rad/s  = max_rate_yaw of the PID
+
+    # Integral states (m*s), only used with use_integral: true
+    w_int_xy_max: 5.0
+    w_int_z_max: 1.0
+
+    # Inputs: the same actuator limits as the PID
+    w_thrust_max: 8.0         # N      = max_thrust_extra
+    w_tau_rp_max: 1.0         # N*m    = max_tau_rp
+    w_tau_yaw_max: 0.1        # N*m    = max_tau_yaw
+
+    # Not part of the LQR design (0 disables each of them)
+    int_err_limit_xy: 0.25    # m  largest error fed to the x/y integrators
+    int_err_limit_z: 0.10     # m  largest error fed to the z integrator
+    pos_err_limit: 2.0        # m  largest horizontal error fed to the control law

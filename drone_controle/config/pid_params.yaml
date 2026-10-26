@@ -1,0 +1,56 @@
+# Frozen configuration for the PID vs LQR comparison (thesis, 2026-10).
+#
+#   ros2 run drone_controle mixer_node --ros-args \
+#       --params-file ~/thesis_ws/src/drone_controle/config/pid_params.yaml
+#
+# "/**" applies to every node, so the LQR node will read the SAME plant and
+# limits. Change them only here, and only together for both controllers.
+# DISCLAIMER: file was generated automatically so can be old if someone forget to update
+
+/**:
+  ros__parameters:
+    use_sim_time: true
+    control_rate: 250.0          # Hz
+
+    # Plant (model.sdf, X3)
+    mass: 1.5                    # kg
+    arm_x: 0.13                  # m
+    arm_y: 0.21                  # m, mean of 0.22 (front) and 0.20 (rear)
+    motor_constant: 8.54858e-06
+    moment_constant: 0.016
+    max_rot_velocity: 800.0      # rad/s
+    ixx: 0.0347563               # kg*m^2
+    iyy: 0.07
+    izz: 0.0977
+
+    # Limits shared by all controllers
+    max_vel: 1.5                 # m/s
+    max_tilt: 0.30               # rad (~17.2 deg); PID: max_accel = g * max_tilt
+    max_thrust_extra: 8.0        # N around hover
+    max_tau_rp: 1.0              # N*m
+    max_tau_yaw: 0.1             # N*m
+
+    # Initial setpoint (overridden by /setpoint)
+    x_sp: 0.0
+    y_sp: 0.0
+    z_sp: 2.0
+    yaw_sp: 0.0
+
+# Cascaded PID. Kp = 1/tau (I/tau for torque loops, m/tau for vz),
+# Ki = Kp/Ti, Ti = 0.0 disables I. Kd = 0 everywhere (justified in the thesis).
+mixer_node:
+  ros__parameters:
+    tau_z: 1.0                   # Kp = 1.0
+    tau_vz: 0.25                 # Kp = m/tau = 6.0
+    ti_vz: 1.25                  # Ki = 4.8
+    tau_pos: 4.0                 # Kp = 0.25
+    tau_vel: 1.0                 # Kp = 1.0
+    ti_vel: 3.0                  # Ki = 0.333
+    tau_angle: 0.3               # Kp = 3.333
+    tau_yaw: 0.6                 # Kp = 1.667
+    tau_rate_rp: 0.1             # Kp = Ixx/tau, Iyy/tau
+    tau_rate_yaw: 0.3            # Kp = Izz/tau
+
+    max_vz: 2.0                  # m/s
+    max_rate_rp: 3.0             # rad/s
+    max_rate_yaw: 0.5            # rad/s
